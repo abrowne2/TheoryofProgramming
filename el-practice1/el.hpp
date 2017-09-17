@@ -100,10 +100,10 @@ struct arg_expr : num_expr {
 
 struct if_expr : num_expr {
 	if_expr(bool_expr *c, num_expr* succeed, num_expr* failure) 
-		:num_expr(et_if), comp(c), success(succeed), fail(failure)
+		:num_expr(et_if), rel(c), success(succeed), fail(failure)
 	{}
 
-	bool_expr* comp;
+	bool_expr* rel;
 	num_expr* success;
 	num_expr* fail;
 };
@@ -150,7 +150,7 @@ int nHeight(num_expr* cur_exp) {
 		case et_arith:
 			return 1 + std::max(nHeight(static_cast<const arith_expr*>(cur_exp)->lhs),nHeight(static_cast<const arith_expr*>(cur_exp)->rhs));
 		case et_if:
-			return 1 + std::max(bHeight(static_cast<const if_expr*>(cur_exp)->comp),nHeight(static_cast<const if_expr*>(cur_exp)->success),nHeight(static_cast<const if_expr*>(cur_exp)->fail));				
+			return 1 + std::max(bHeight(static_cast<const if_expr*>(cur_exp)->rel),std::max(nHeight(static_cast<const if_expr*>(cur_exp)->success),nHeight(static_cast<const if_expr*>(cur_exp)->fail)));				
 	}
 }
 
