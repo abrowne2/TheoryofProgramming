@@ -60,37 +60,9 @@ struct prog {
 	num_expr* body;
 	bool_expr* bBody;
 
-	int nHeight(num_expr& cur_exp);
-	int bHeight(bool_expr& cur_exp);
+	int nHeight(num_expr* cur_exp);
+	int bHeight(bool_expr* cur_exp);
 };
-
-//NOTE: fix this; define it in each derived class or for each case!??!?!?!?
-//(no time --- my fault entirely.)
-
-//pass body pointer to get height of current loaded prog?
-int prog::nHeight(num_expr& cur_exp) {
-	switch(cur_exp.type){
-		case et_int:
-			return 0;
-		case et_arg:
-			return 1;
-		case et_arith:
-			return 1 + std::max(nHeight(cur_exp.*lhs),nHeight(cur_exp.*rhs));
-		case et_if:
-			return 1 + std::max(bHeight(cur_exp.*comp),nHeight(cur_exp.*success),nHeight(cur_exp.*fail));				
-	}
-}
-
-int prog::bHeight(bool_expr& cur_exp) {
-	switch(cur_exp.type){
-		case et_bool:
-			return 0;
-		case et_rel:
-			return 1 + std::max(nHeight(cur_exp.*lhs),nHeight(cur_exp.*rhs));
-		case et_log:
-			return 1 + std::max(bHeight(cur_exp.*lhs),bHeight(cur_exp.*rhs));
-	}
-}
 
 struct num_expr {
 	num_expr(num_expr_type t)
@@ -174,4 +146,27 @@ struct log_expr : bool_expr {
 	bool_expr* rhs;
 };
 
+//pass body pointer to get height of current loaded prog?
+int prog::nHeight(num_expr* cur_exp) {
+	switch(cur_exp->type){
+		case et_int:
+			return 0;
+		case et_arg:
+			return 1;
+		case et_arith:
+			return 1 + std::max(nHeight(static_cast<const arith_expr*>(cur_exp)->lhs),nHeight(static_cast<const arith_expr*>(cur_exp)->rhs));
+		case et_if:
+			return 1 + std::max(bHeight(static_cast<const if_expr*>(cur_exp)->comp),nHeight(static_cast<const if_expr*>(cur_exp)->success),nHeight(static_cast<const if_expr*>(cur_exp)->fail));				
+	}
+}
 
+int prog::bHeight(bool_expr* cur_exp) {
+	switch(cur_exp->type){
+		case et_bool:
+			return 0;
+		case et_rel:
+			return 1 + std::max(nHeight(static_cast<const rel_expr*>(cur_exp)->lhs),nHeight(static_cast<const rel_expr*>(cur_exp)->rhs));
+		case et_log:
+			return 1 + std::max(bHeight(static_cast<const log_expr*>(cur_exp)->lhs),bHeight(static_cast<const log_expr*>(cur_exp)->rhs));
+	}
+}
