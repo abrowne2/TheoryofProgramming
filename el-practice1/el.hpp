@@ -52,16 +52,8 @@ struct prog {
 		:num_args(n), body(exp)
 	{}
 
-	prog(int n, bool_expr* exp)
-		:num_args(n), bBody(exp)
-	{}
-
 	int num_args;
 	num_expr* body;
-	bool_expr* bBody;
-
-	int nHeight(num_expr* cur_exp);
-	int bHeight(bool_expr* cur_exp);
 };
 
 struct num_expr {
@@ -146,8 +138,10 @@ struct log_expr : bool_expr {
 	bool_expr* rhs;
 };
 
-//pass body pointer to get height of current loaded prog?
-int prog::nHeight(num_expr* cur_exp) {
+int nHeight(num_expr* cur_exp);
+int bHeight(bool_expr* cur_exp);
+
+int nHeight(num_expr* cur_exp) {
 	switch(cur_exp->type){
 		case et_int:
 			return 0;
@@ -160,7 +154,7 @@ int prog::nHeight(num_expr* cur_exp) {
 	}
 }
 
-int prog::bHeight(bool_expr* cur_exp) {
+int bHeight(bool_expr* cur_exp) {
 	switch(cur_exp->type){
 		case et_bool:
 			return 0;
