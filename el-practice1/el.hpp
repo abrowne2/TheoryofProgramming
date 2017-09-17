@@ -152,7 +152,7 @@ int prog::nHeight(num_expr* cur_exp) {
 		case et_int:
 			return 0;
 		case et_arg:
-			return 1;
+			return 0;
 		case et_arith:
 			return 1 + std::max(nHeight(static_cast<const arith_expr*>(cur_exp)->lhs),nHeight(static_cast<const arith_expr*>(cur_exp)->rhs));
 		case et_if:
