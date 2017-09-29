@@ -88,6 +88,9 @@ struct err {
 };
 
 struct int_literal :num_expr {
+	int_literal()
+		:num_expr(et_int), value()
+	{}
 	int_literal(int n)
 		:num_expr(et_int), value(n)
 	{}
@@ -117,6 +120,7 @@ struct arith_expr :num_expr {
 	arith_op op;
 	num_expr* lhs;
 	num_expr* rhs;
+	expr arith_eval(const arith_op, int l, int r);
 	expr fold();
 };
 
