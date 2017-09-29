@@ -51,6 +51,8 @@ enum error {
 struct prog;
 struct num_expr;
 struct bool_expr;
+struct expr;
+
 
 struct prog {
 	prog(int n, num_expr* exp)
@@ -66,15 +68,15 @@ struct num_expr {
 		:type(t)
 	{}
 	num_expr_type type;
-	num_expr* fold();
+	expr fold();
 };
 
 struct bool_expr {
 	bool_expr(bool_expr_type t)
 		:type(t)
 	{}
-
 	bool_expr_type type;
+	expr fold();
 };
 
 struct err {
@@ -102,12 +104,16 @@ struct int_literal :num_expr {
 struct expr {
 	expr() = default;
 	expr(num_expr* expression)
-		:exp(expression), expr_error()
+		:exp(expression), bExp(nullptr), expr_error()
+	{}
+	expr(bool_expr* expression)
+		:exp(nullptr), bExp(expression), expr_error() 
 	{}
 	expr(err ex_error)
-		:exp(nullptr), expr_error(ex_error)
+		:exp(nullptr), bExp(nullptr), expr_error(ex_error)
 	{}
 	num_expr* exp;
+	bool_expr* bExp;
 	err expr_error;
 };
 
@@ -140,14 +146,15 @@ struct if_expr : num_expr {
 	bool_expr* rel;
 	num_expr* success;
 	num_expr* fail;
+	expr fold();
 };
 
 struct bool_literal : bool_expr {
 	bool_literal(bool n)
 		:bool_expr(et_bool), value(n)
 	{}
-
 	bool value;
+	bool_literal fold();
 };
 
 struct rel_expr : bool_expr {
